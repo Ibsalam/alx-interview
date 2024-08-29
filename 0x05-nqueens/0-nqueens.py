@@ -1,50 +1,49 @@
 #!/usr/bin/python3
 """0-nqueens.py"""
-
 import sys
 
-def is_safe(board, row, col):
-    # Check the current row on left side
-    for i in range(col):
-        if board[row][i] == 1:
+
+def is_safe(board, row, col, n):
+    """
+    Check if it's safe to place a queen at board[row][col]
+    """
+    for i in range(row):
+        if board[i][col] == 1:
             return False
 
-    # Check upper diagonal on left side
-    for i, j in zip(range(row, -1, -1), range(col, -1, -1)):
+    i, j = row, col
+    while i >= 0 and j >= 0:
         if board[i][j] == 1:
             return False
+        i -= 1
+        j -= 1
 
-    # Check lower diagonal on left side
-    for i, j in zip(range(row, len(board), 1), range(col, -1, -1)):
+    i, j = row, col
+    while i >= 0 and j < n:
         if board[i][j] == 1:
             return False
+        i -= 1
+        j += 1
 
     return True
 
-def solve_nqueens_util(board, col):
-    if col >= len(board):
-        solution = []
-        for i in range(len(board)):
-            for j in range(len(board)):
-                if board[i][j] == 1:
-                    solution.append([i, j])
-        print(solution)
-        return True
 
-    res = False
-    for i in range(len(board)):
-        if is_safe(board, i, col):
-            board[i][col] = 1
-            res = solve_nqueens_util(board, col + 1) or res
-            board[i][col] = 0  # Backtrack
+def solve(board, row, n):
+    """
+    Recursively solve the N queens problem and print all solutions
+    """
+    if row == n:
+        print([[i, j] for i in range(n) for j in range(n) if board[i][j] == 1])
+        return
 
-    return res
+    for col in range(n):
+        if is_safe(board, row, col, n):
+            board[row][col] = 1
+            solve(board, row + 1, n)
+            board[row][col] = 0
 
-def solve_nqueens(N):
-    board = [[0] * N for _ in range(N)]
-    solve_nqueens_util(board, 0)
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     if len(sys.argv) != 2:
         print("Usage: nqueens N")
         sys.exit(1)
@@ -59,5 +58,6 @@ if __name__ == "__main__":
         print("N must be at least 4")
         sys.exit(1)
 
-    solve_nqueens(N)
+    board = [[0 for j in range(N)] for i in range(N)]
+    solve(board, 0, N)
 
