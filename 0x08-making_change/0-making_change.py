@@ -1,15 +1,24 @@
+"""Making change.
+"""
+
+
 def makeChange(coins, total):
+    """Determines the fewest number of coins needed to meet a given
+    amount total with a given pile of coins of different values.
+    """
     if total <= 0:
         return 0
-
-    # Initialize the DP array to a large number (representing infinity)
-    dp = [float('inf')] * (total + 1)
-    dp[0] = 0  # Base case: 0 coins are needed to reach a total of 0
-
-    # Fill the DP array
-    for coin in coins:
-        for i in range(coin, total + 1):
-            dp[i] = min(dp[i], dp[i - coin] + 1)
-
-    # If dp[total] is still infinity, it means we cannot form the total
-    return dp[total] if dp[total] != float('inf') else -1
+    remainder = total
+    coins_count = 0
+    coin_idx = 0
+    sorted_coins = sorted(coins, reverse=True)
+    n = len(coins)
+    while remainder > 0:
+        if coin_idx >= n:
+            return -1
+        if remainder - sorted_coins[coin_idx] >= 0:
+            remainder -= sorted_coins[coin_idx]
+            coins_count += 1
+        else:
+            coin_idx += 1
+    return coins_count
