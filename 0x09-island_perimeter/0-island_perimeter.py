@@ -2,23 +2,24 @@
 """Island perimeter computing module.
 """
 
+
 def island_perimeter(grid):
+    """Computes the perimeter of an island with no lakes.
+    """
     perimeter = 0
-    rows = len(grid)
-    cols = len(grid[0]) if rows > 0 else 0
-
-    for r in range(rows):
-        for c in range(cols):
-            if grid[r][c] == 1:
-                # Each land cell contributes 4 to the perimeter
-                perimeter += 4
-
-                # If there's land to the top, subtract 2 from the perimeter
-                if r > 0 and grid[r - 1][c] == 1:
-                    perimeter -= 2
-
-                # If there's land to the left, subtract 2 from the perimeter
-                if c > 0 and grid[r][c - 1] == 1:
-                    perimeter -= 2
-
+    if type(grid) != list:
+        return 0
+    n = len(grid)
+    for i, row in enumerate(grid):
+        m = len(row)
+        for j, cell in enumerate(row):
+            if cell == 0:
+                continue
+            possibles = (
+                i == 0 or (len(grid[i - 1]) > j and grid[i - 1][j] == 0),
+                j == m - 1 or (m > j + 1 and row[j + 1] == 0),
+                i == n - 1 or (len(grid[i + 1]) > j and grid[i + 1][j] == 0),
+                j == 0 or row[j - 1] == 0,
+            )
+            perimeter += sum(possibles)
     return perimeter
