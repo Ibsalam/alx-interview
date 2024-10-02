@@ -2,51 +2,27 @@
 """Prime game module.
 """
 
-def sieve(n):
-    """ Returns a list of prime numbers up to n using the Sieve of Eratosthenes. """
-    primes = [True] * (n + 1)
-    p = 2
-    while (p * p <= n):
-        if primes[p] == True:
-            # Marking multiples of p as False
-            for i in range(p * p, n + 1, p):
-                primes[i] = False
-        p += 1
-    return [p for p in range(2, n + 1) if primes[p]]
-
-def play_game(n):
-    """ Simulates the game for a given n, returns 1 if Maria wins, 0 if Ben wins """
-    if n < 2:
-        return 0  # Ben wins if there are no primes for Maria to start with
-
-    primes = sieve(n)
-    prime_set = set(primes)
-
-    turn = 0  # 0 for Maria, 1 for Ben
-    while prime_set:
-        # Pick the smallest prime and remove its multiples
-        prime = min(prime_set)
-        multiples = set(range(prime, n + 1, prime))
-        prime_set -= multiples
-        turn ^= 1  # Switch turns
-
-    # The player who cannot make a move loses, so if turn == 1, Maria wins, else Ben wins
-    return 1 if turn == 1 else 0
 
 def isWinner(x, nums):
-    """ Determines the winner over x rounds. """
-    maria_wins = 0
-    ben_wins = 0
-
-    for n in nums:
-        if play_game(n) == 1:
-            maria_wins += 1
-        else:
-            ben_wins += 1
-
-    if maria_wins > ben_wins:
-        return "Maria"
-    elif ben_wins > maria_wins:
-        return "Ben"
-    else:
+    """Determines the winner of a prime game session with `x` rounds.
+    """
+    if x < 1 or not nums:
         return None
+    m_wins, b_wins = 0, 0
+    # generate primes with a limit of the maximum number in nums
+    n = max(nums)
+    primes = [True for _ in range(1, n + 1, 1)]
+    primes[0] = False
+    for i, is_prime in enumerate(primes, 1):
+        if i == 1 or not is_prime:
+            continue
+        for j in range(i + i, n + 1, i):
+            primes[j - 1] = False
+    # filter the number of primes less than n in nums for each round
+    for _, n in zip(range(x), nums):
+        primes_count = len(list(filter(lambda x: x, primes[0: n])))
+        b_wins += primes_count % 2 == 0
+        m_wins += primes_count % 2 == 1
+    if m_wins == b_wins:
+        return None
+    return 'Maria' if m_wins > b_wins else 'Ben'
